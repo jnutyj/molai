@@ -1,49 +1,107 @@
 import re
 from rdkit import Chem
 import random
+from typing import List, Dict
 
-### This module is to process smiles from dataset before training
+### All SMILES text handling
+# tokenization
+# detokenization
+# vocabulary building
+# SMILES randomization(augmentation)
 
-def tokenize_smiles(smiles):
+######################################
+# SMILES tokenization
+#####################################
+
+
+# Regex adapted from DeepSMILES / ChemBERTa
+SMILES_REGEX = (
+    r"(\[[^\]]+]|"     # atom in brackets
+    r"Br|Cl|"          # two-character atoms
+    r"B|C|N|O|P|S|F|I|"# single-character atoms
+    r"b|c|n|o|s|p|"    # aromatic atoms
+    r"\(|\)|\.|=|#|-|\+|\\|/|:|~|@|\?|>|\*|\$|"
+    r"%\d{2}|"         # ring numbers >9
+    r"\d)"             # ring numbers
+)
+
+_token_pattern = re.compile(SMILES_REGEX)
+
+
+class SmilesTokenizer:
     """
-    Tokenize SMILES into meaningful chemical tokens
+    SMILES tokenizer with vocabulary management
+
     """
-    regex = (
-        r"(?:\[[^\]]+\])"     # bracket atoms
-        r"|Br|Cl"             # halogens
-        r"|Si|Na|Ca|Li"       # multi-char elements (optional)
-        r"|\d"                # ring numbers
-        r"|=|#|-|\+"          # bonds
-        r"|\(|\)"             # branches
-        r"|\.|\/|\\"          # misc
-        r"|[A-Za-z]"          # atoms
-    )
-    return re.findall(regex, smiles)
+    def __init__(self):
+        self.special_tokens = ["<pad>", "<bos>", "<eos>", "<unk>"]
+        self.token_to_idx: Dict[str, int] = {}
+        self.idx_to_token: Dict[int, str] = {}
 
 
-def randomize_smiles(smiles,n=5):
-    """ Generate n randomized SMILES for a molecule
+
+    def tokenize(self, smiles: str) -> List[str]:
+        return _token_pattern.findall(smiles)
+
+    def build_vocab(self,smiles_list: List[str]):
+        tokens=set()
+        for smi in smiles_list:
+            tokens.update(self.tokenize(smi))
+
+
+        vocab = self.special_tokens + sorted(tokens)
+        self.token_to_idx = {tok: i for i,tok in enumerate(vocab)}
+        self.idx_to_token = {i: tok for tok, i in self.token_to_idx.items()}
+
+    def encode(self, smiles: str, add_special_tokens: bool = True) -> List[int]:
+        
+        tokens = self.tokenize(smiles)
+        ids = [self.token_to_idx.get(t, self.token_to_idx["<unk>"]) for t in tokens]
+        if add_special_tokens:
+            ids = [self.token_to_idx["<bos>"]] + ids + [self.token_to_idx["<eos>"]]
+
+        return ids
+
+    
+    def decode(self, ids: List[int], remove_special_tokens: bool = True) -> str:
+        tokens = []
+        for i in ids:
+            tok = self.idx_to_token.get(i,"")
+            if remove_special_tokens and tok in self.special_tokens:
+                continue
+            tokens.append(tok)
+        return "".join(tokens)
+
+    @property
+    def vocab_size(self) -> int:
+        return len(self.token_to_idx)
+
+
+#######################################
+# SMILES augmentation
+#######################################
+
+def randomize_smiles(smiles: str, num_tries: int = 10) -> str:
+    """
+    Generate a randomized SMILES string NOT a list
     """
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
-        return []
-    smi_list = []
-    for _ in range(n):
-        smi_list.append(Chem.MolToSmiles(mol,doRandom=True))
-    return smi_list
+        return smiles
+
+    for _ in range(num_tries):
+        try:
+            return Chem.MolToSmiles(
+                mol,
+                canonical=False,
+                doRandom=True
+            )
+        except Exception:
+            continue
+
+    return smiles
 
 
-def augment_smiles(smiles_list,n_aug=5):
-    augmented = []
-    for smi in smiles_list:
-        #augmented.extend(randomize_smiles(smi,n_aug))
-        augmented.append(randomize_smiles(smi,n_aug))
-    return augmented
 
-def is_valid_smiles(smiles: str) -> bool:
-    from rdkit import RDLogger
-    RDLogger.DisableLog('rdApp.error')
-    return Chem.MolFromSmiles(smiles) is not None
 
-#smis=["CC(C)CN(C)Cc1cc(ccc1O)C(=O)c2cc(sc2)S(=O)(=O)N","CCO"]
-#print(augment_smiles(smis))
+#print(randomize_smiles("CCOCN"))
