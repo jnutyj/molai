@@ -53,12 +53,25 @@ class SmilesTokenizer:
         self.token_to_idx = {tok: i for i,tok in enumerate(vocab)}
         self.idx_to_token = {i: tok for tok, i in self.token_to_idx.items()}
 
-    def encode(self, smiles: str, add_special_tokens: bool = True) -> List[int]:
+    def encode(
+            self, 
+            smiles: str, 
+            max_length: int,
+            padding: bool = True,
+            truncation: bool = True,
+            add_special_tokens: bool = True) -> List[int]:
         
         tokens = self.tokenize(smiles)
         ids = [self.token_to_idx.get(t, self.token_to_idx["<unk>"]) for t in tokens]
         if add_special_tokens:
             ids = [self.token_to_idx["<bos>"]] + ids + [self.token_to_idx["<eos>"]]
+
+        if truncation:
+            ids = ids[:max_length]
+
+        if padding and len(ids) < max_length:
+            ids = ids + [self.token_to_idx["<pad>"]] * (max_length - len(ids))
+
 
         return ids
 
