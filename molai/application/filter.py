@@ -16,8 +16,8 @@ def is_valid_smiles(smiles: str) -> bool:
 def filter_smiles(
     smiles: List[str],
     training_set: Set[str] = None,
-    min_qed: float = 0.0,
-    max_sa: float = 10.0,
+    min_qed: float = 0.4,
+    max_sa: float = 5.0,
 ):
     """
     Apply validity, novelty, SA, QED filters
