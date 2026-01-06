@@ -1,13 +1,13 @@
 
-from .qsar import train_and_evaluate_qsar
-from .generate_filter import generate_and_filter
-from .rl_optimize import rl_optimize_generator
-from .vae_latent_opt import optimize_vae_latent_space
+from .qsar import run_qsar_pipeline
+from .generate_filter import run_generate_and_filter_pipeline
+from .rl_optimize import rl_optimize
+from .vae_latent_opt import vae_latent_optimization_pipeline
 
 __all__ = [
-    "train_and_evaluate_qsar",
-    "generate_and_filter",
-    "rl_optimize_generator",
-    "optimize_vae_latent_space",
+    "run_qsar_pipeline",
+    "run_generate_and_filter_pipeline",
+    "rl_optimize",
+    "vae_latent_optimization_pipeline",
 ]
 
