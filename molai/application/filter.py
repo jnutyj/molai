@@ -1,10 +1,7 @@
-# molai/application/filter.py
-
 from typing import List, Set
 from rdkit import Chem
 from rdkit.Chem import QED
-from molai.utils.chemistry import sa_score
-
+import sascorer
 
 ########################################
 # MOLECULE FILTERS
@@ -26,7 +23,8 @@ def filter_smiles(
     Apply validity, novelty, SA, QED filters
     """
     filtered = []
-
+    from rdkit import RDLogger
+    RDLogger.DisableLog('rdApp.error')
     for smi in smiles:
         mol = Chem.MolFromSmiles(smi)
         if mol is None:
@@ -41,7 +39,7 @@ def filter_smiles(
             continue
 
         # SA
-        if sa_score(mol) > max_sa:
+        if sascorer.calculateScore(mol) > max_sa:
             continue
 
         filtered.append(smi)
