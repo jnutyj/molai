@@ -1,5 +1,3 @@
-# molai/training/rl.py
-
 import torch
 import torch.nn.functional as F
 from typing import Callable

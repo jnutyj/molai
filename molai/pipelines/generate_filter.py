@@ -13,7 +13,7 @@ from molai.application.score import score_smiles
 ########################################
 
 
-def generate_and_filter(
+def run_generate_and_filter_pipeline(
         generator,
         tokenizer,
         predictor,

@@ -1,0 +1,55 @@
+molai/
+├── pyproject.toml
+├── README.md
+│
+├── molai/
+│   ├── __init__.py
+│
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── smiles.py          # tokenize, detokenize, augment
+│   │   └── dataset.py         # PyTorch Dataset classes
+│   │
+│   ├── features/
+│   │   ├── __init__.py
+│   │   ├── fingerprints.py    # MACCS, Morgan
+│   │   └── descriptors.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── lstm.py            # predictor + generator
+│   │   ├── vae.py             # SMILES VAE
+│   │   └── latent.py          # latent predictors
+│   │
+│   ├── training/
+│   │   ├── __init__.py
+│   │   ├── supervised.py      # QSAR training
+│   │   ├── generation.py      # LM / VAE training
+│   │   └── rl.py              # policy gradient
+│   │
+│   ├── application/
+│   │   ├── __init__.py
+│   │   ├── generate.py        # sample molecules
+│   │   ├── score.py           # property scoring
+│   │   ├── filter.py          # validity, novelty, SA, QED
+│   │   └── constraints.py     # scaffold, MW, logP
+│   │
+│   ├── pipelines/
+│   │   ├── __init__.py
+│   │   ├── qsar.py             # train + evaluate predictors
+│   │   ├── generate_filter.py  # generator + predictor
+│   │   ├── rl_optimize.py      # RL fine-tuning
+│   │   └── vae_latent_opt.py   # VAE latent optimization
+│   │
+│   └── utils/
+│       ├── chemistry.py
+│       ├── metrics.py
+│       └── io.py
+│
+└── scripts/
+    ├── train_qsar.py
+    ├── train_generator.py
+    ├── run_generation.py
+    ├── rl_finetune.py
+    └── explain.py
+

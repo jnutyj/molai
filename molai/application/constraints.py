@@ -1,5 +1,3 @@
-# molai/application/constraints.py
-
 from typing import List
 from rdkit import Chem
 from rdkit.Chem import Descriptors
