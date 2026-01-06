@@ -17,31 +17,31 @@ It is designed for:
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔹 Prediction
+### Prediction
 - SMILES → property regression
 - LSTM-based predictors
 - Fingerprint-based baselines (MACCS, Morgan)
 
-### 🔹 Generation
+### Generation
 - SMILES LSTM language models
 - SMILES Variational Autoencoder (VAE)
 - Property-guided molecule generation
 
-### 🔹 Optimization
+### Optimization
 - Filtering-based inverse QSAR
 - Reinforcement learning (policy gradient)
 - **Latent-space optimization (VAE + latent predictor)**
 
-### 🔹 Chemistry utilities
+### Chemistry utilities
 - RDKit SMILES validation
 - QED / SA / novelty filtering
 - PhysChem constraints (MW, logP, scaffolds)
 
 ---
 
-## 🧠 Core Concepts
+## Core Concepts
 
 molai cleanly separates **modeling**, **training**, and **application logic**:
 
