@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from typing import Optional
 
 from molai.data.dataset import SmilesRegressionDataset,Collate_smiles
-
+from molai.models.latent import LatentPredictor 
 
 
 def train_lstm_predictor(
@@ -77,3 +77,50 @@ def train_lstm_predictor(
 
 
     return model
+
+def train_latent_predictor(
+    latent_model: LatentPredictor,
+    dataset: SmilesRegressionDataset,
+    vae: nn.Module,
+    pad_idx: int = 0,
+    batch_size: int = 64,
+    lr: float = 3e-4,
+    epochs: int = 20,
+    device: str = "cpu",
+        ):
+
+    
+    train_loader = DataLoader(
+        dataset,
+        batch_size = batch_size,
+        shuffle = True,
+        collate_fn=lambda b: collate_smiles(b,pad_idx)
+    )
+
+    vae.to(device).eval()
+    latent_model.to(device)
+    optimizer = torch.optim.Adam(latent_model.parameters(), lr=lr)
+    loss_fn = nn.MSELoss()
+    
+    for epoch in range(epochs):
+        latent_model.train()
+        total_loss = 0.0
+        for batch in train_loader:
+            x=batch["input_ids"].to(device)
+            y=batch["targets"].to(device)
+            with torch.no_grad():
+                mu, _ = vae.encode(x)
+                z = mu  # deterministic latent, avoid noisy data
+
+            preds = latent_model(z)
+            loss = loss_fn(preds, y)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+        avg_loss= total_loss/len(train_loader)
+        print(f"[Latent] Epoch {epoch+1:03d} | MSE: {avg_loss:.4f}")
+
+    return latent_model
