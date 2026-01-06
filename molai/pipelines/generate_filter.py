@@ -19,7 +19,7 @@ def generate_and_filter(
         predictor,
         reference_smiles: List[str],
         num_sample: int = 1000,
-        max_length: int = 100,
+        max_length: int = 120,
         temperature: float = 1.0,
         device: str = "cpu",
         filter_config: Dict = None,
@@ -33,9 +33,9 @@ def generate_and_filter(
 
     if filter_config is None:
         filter_config = {
-            "valid": True,
-            "unique": True,
-            "novel": True,
+            #"valid": True,
+            #"unique": True,
+            #"novel": True,
             "qed_min": 0.3,
             "sa_max": 6.0,
         }
