@@ -5,6 +5,11 @@ from typing import Callable
 from molai.training.rl import policy_gradient_step
 from molai.data.smiles import SmilesTokenizer
 from molai.models.lstm import SmilesLSTMGenerator
+from molai.application.filter import is_valid_smiles
+from molai.application.score import score_smiles,compute_qed, compute_sa
+
+
+
 
 
 ############################################
@@ -16,7 +21,7 @@ def sample_smiles_with_logprobs(
     tokenizer,
     device,
     max_len=120,
-    temperature=1.0,
+    temperature= 1.0,
 ):
     model.eval()
 
@@ -46,6 +51,23 @@ def sample_smiles_with_logprobs(
 
     smiles = tokenizer.decode(token_ids)
     return smiles, torch.stack(log_probs)
+
+############################################
+# example for reward function
+############################################
+def reward_fn(smiles_list, predictor):
+    rewards = []
+    for smi in smiles_list:
+        if not is_valid_smiles(smi):
+            rewards.append(-1.0)
+            continue
+        pred = score_smiles(predictor,smi) ### TODO: test it and make it correct
+        qed = compute_qed(smi)
+        sa = compute_sa(smi)
+        reward=pred+0.5*qed-0.2*sa
+        rewards.append(reward)
+    return torch.tensor(rewards, dtype=torch.float)
+
 
 
 ############################################
@@ -113,5 +135,5 @@ def rl_optimize(
         print(f"Epoch {epoch+1:02d} | RL loss: {loss:.4f}")
 
     torch.save(model.state_dict(), output_ckpt)
-    print(f"✅ RL generator saved to {output_ckpt}")
+    print(f"RL generator saved to {output_ckpt}")
 
