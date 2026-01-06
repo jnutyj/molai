@@ -1,5 +1,3 @@
-# molai/pipelines/qsar.py
-
 import pickle
 import pandas as pd
 from typing import Literal, Dict
@@ -8,20 +6,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
 from molai.features.fingerprints import (
-    maccs_fingerprint,
-    morgan_fingerprint,
+    maccs_fp,
+    morgan_fp,
 )
-from molai.training.supervised import train_sklearn_regressor
-from molai.utils.metrics import regression_metrics
-
+#from molai.training.supervised import train_sklearn_regressor
+#from molai.utils.metrics import regression_metrics
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 ########################################
 # Feature registry
 ########################################
 
 FEATURE_EXTRACTORS = {
-    "maccs": maccs_fingerprint,
-    "morgan": morgan_fingerprint,
+    "maccs": maccs_fp,
+    "morgan": morgan_fp,
 }
 
 
@@ -90,22 +88,26 @@ def run_qsar_pipeline(
     # Train
     # -------------------------
     print("Training QSAR model...")
-    model = train_sklearn_regressor(
-        model,
-        X_train,
-        y_train,
-    )
+    #model = train_sklearn_regressor(
+    #    model,
+    #    X_train,
+    #    y_train,
+    #)
+
+    model.fit(X_train,y_train)
 
     # -------------------------
     # Evaluate
     # -------------------------
     print("Evaluating...")
     y_pred = model.predict(X_test)
-    metrics = regression_metrics(y_test, y_pred)
+    #metrics = regression_metrics(y_test, y_pred)
 
-    for k, v in metrics.items():
-        print(f"{k}: {v:.3f}")
+    #for k, v in metrics.items():
+    #    print(f"{k}: {v:.3f}")
 
+    print(f"R^2 Score:{r2_score(y_test, y_pred):.3f} MAE:{mean_absolute_error(y_test, y_pred):.3f} RMSE:{np.sqrt(mean_squared_error(y_test, y_pred)):.3f}")
+    metrics = {"r2_score": r2_score(y_test, y_pred), "MAE": mean_absolute_error(y_test, y_pred),"RMSE": np.sqrt(mean_squared_error(y_test, y_pred))}
     # -------------------------
     # Save model
     # -------------------------
