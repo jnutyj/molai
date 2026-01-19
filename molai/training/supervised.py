@@ -4,12 +4,12 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from typing import Optional
 
-from molai.data.dataset import SmilesRegressionDataset,Collate_smiles
+from molai.data.dataset import SmilesRegressionDataset, collate_smiles
 from molai.models.latent import LatentPredictor 
 
 
 def train_lstm_predictor(
-        model: nn.Module
+        model: nn.Module,
         dataset: SmilesRegressionDataset,
         val_dataset: Optional[SmilesRegressionDataset] = None,
         pad_idx: int = 0,

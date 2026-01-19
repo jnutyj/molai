@@ -215,7 +215,7 @@ def vae_latent_optimization_pipeline(
         ids = tokenizer.encode(smi)
         x = torch.tensor(ids, dtype=torch.long,device=device).unsqueeze(0)
         with torch.no_grad():
-            mu,_ vae.encode(x)
+            mu,_ =vae.encode(x)
         encoded.append(mu)
     z_init = torch.cat(encoded,dim=0)
 

@@ -14,7 +14,7 @@ def sample_smiles_lstm(
         max_length: int = 100,
         temperature: float = 1.0,
         device: str = "cpu",
-) -> List[st]:
+) -> List[str]:
     """
     Sample SMILES strings from a trained generative model
     """

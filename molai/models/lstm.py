@@ -37,7 +37,7 @@ class SmilesLSTMGenerator(nn.Module):
         return logits
         
 
-class SmilesLSTMPredictor(nn.module):
+class SmilesLSTMPredictor(nn.Module):
     """
     LSTM for SMILES regression (predict property like pIC50)
     """
@@ -64,7 +64,7 @@ class SmilesLSTMPredictor(nn.module):
 
         if lengths is not None:
             # pack padded sequences
-            x = nn.utils.rnn.pack_padded_sequence(x,lengths.cpu,batch_first=True,enforce_sorted=False)
+            x = nn.utils.rnn.pack_padded_sequence(x,lengths.cpu(),batch_first=True,enforce_sorted=False)
             out,_=self.lstm(x)
             out,_=nn.utils.rnn.pad_packed_sequence(out,batch_first=True)
         else:

@@ -1,5 +1,5 @@
-from .supervised import train_lstm_predictor
-from .generation import train_lstm_generator, train_vae, train_latent_predictor 
+from .supervised import train_lstm_predictor, train_latent_predictor
+from .generation import train_lstm_generator, train_vae
 from .rl import policy_gradient_step 
 
 __all__ = [

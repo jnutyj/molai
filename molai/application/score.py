@@ -1,8 +1,14 @@
+import os
+import sys
 import torch
 from typing import List
 from molai.data.smiles import SmilesTokenizer
 from rdkit import Chem
 from rdkit.Chem import QED
+from rdkit.Chem import RDConfig
+
+# Append the SA_Score directory to the system path
+sys.path.append(os.path.join(RDConfig.RDContribDir, 'SA_Score'))
 import sascorer
 
 ########################################
